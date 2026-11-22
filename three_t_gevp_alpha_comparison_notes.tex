@@ -1,0 +1,389 @@
+\documentclass[11pt]{article}
+\usepackage[margin=0.82in]{geometry}
+\usepackage{amsmath,amssymb,mathtools,bm}
+\usepackage{booktabs,array,longtable}
+\usepackage{enumitem}
+\usepackage{microtype}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{fancyhdr}
+\hypersetup{colorlinks=true,linkcolor=blue!55!black,urlcolor=blue!55!black,citecolor=blue!55!black}
+\setlength{\parskip}{5pt}
+\setlength{\parindent}{0pt}
+\setlist{nosep,leftmargin=1.45em}
+\setlength{\headheight}{14pt}
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{Three-time GEVP: working notes}
+\rhead{19 November 2026}
+\cfoot{\thepage}
+\newcommand{\C}{\mathsf C}
+\newcommand{\A}{\mathsf A}
+\newcommand{\B}{\mathsf B}
+\newcommand{\D}{\mathsf D}
+\newcommand{\Eeff}{E^{\mathrm{eff}}}
+\newcommand{\Ealp}{E^{\mathrm{ALPHA}}}
+\newcommand{\Emov}{E^{\mathrm{move}}}
+\newcommand{\spec}{\operatorname{spec}}
+\newcommand{\Tr}{\operatorname{tr}}
+\newcommand{\Ran}{\operatorname{Ran}}
+\newcommand{\dd}{\,\mathrm d}
+\newcommand{\cO}{\mathcal O}
+\title{Three-Time GEVP: Further Analysis and an Explicit Comparison with ALPHA}
+\author{Working research notes}
+\date{19 November 2026}
+\begin{document}
+\maketitle
+\begin{abstract}
+These notes compare the three-time problem in Dan Hoying's 2019 talk with the asymptotic GEVP analysis of Blossier et al. (ALPHA, 2009). The central result is a positive-semidefinite matrix defect for the actual ALPHA time arrangement $(t_0,t,t+a)$, not only for equally spaced slices. It is obtained from operator Jensen inequality. In the GEVP basis at $(t,t_0)$, the diagonal and off-diagonal parts of this defect give a nonperturbative analogue of the diagonal/eigenvector-error split in the talk. We also compare the ALPHA fixed-reference effective energy with a moving-reference GEVP on $(t,t+a)$, derive exact variational inequalities, and analyze in what sense the ALPHA time choices are or are not optimal.
+\end{abstract}
+
+\section{Executive conclusions}
+\textbf{Main answer.} The ALPHA construction is asymptotically optimal in an important but limited sense: its adjacent late-time slices $t,t+a$ use the smallest available finite-difference step, and its condition $t_0\geq t/2$ is precisely what prevents higher-order eigenvector-mixing terms from decaying more slowly than the leading omitted-state term. The resulting generic asymptotic energy error is controlled by the large gap $E_{N+1}-E_n$.
+
+It is \emph{not} a proof of global optimality over all estimators or all choices of three times. The first-order energy correction is independent of $t_0$, so there is no first-order criterion selecting a unique reference time. Higher-order mixing favors larger $t_0$, while numerical conditioning and statistical noise can favor a smaller one. ALPHA's paper handles this practical tradeoff by varying $N,t_0,t$ and balancing statistical and systematic errors.
+
+There are three particularly useful additions:
+\begin{enumerate}
+\item For the actual triplet $(t_0,t,t+a)$, define $\tau=t-t_0$ and $p=1+a/\tau$. On a lattice with distinct slices, $1<p\leq2$. The whitened matrices obey
+\[
+\boxed{\D_p=\B-\A^p\succeq0.}
+\]
+This is an exact, nonperturbative three-slice statement.
+\item The moving-reference GEVP $\C(t+a)w=\theta\C(t)w$ is a Rayleigh--Ritz approximation to the one-step transfer operator. Its ordered energies are rigorous upper bounds for all resolved levels. For the ground state its upper bound is no worse than the ALPHA ratio estimator; for interior excited levels there is no universal ordering.
+\item If one chooses the consecutive triplet $(t-a,t,t+a)$, the Jensen defect becomes the ordinary Schur complement $\B-\A^2$. This is a particularly transparent way to connect the three-slice positivity method with the ALPHA asymptotic regime.
+\end{enumerate}
+
+\section{Notation and the ALPHA construction}
+Assume a positive spectral representation
+\[
+\C_{ij}(s)=\sum_{k\geq1}e^{-E_k s}\,\psi_{ki}\psi_{kj}^*,\qquad
+E_1<E_2<\cdots,
+\]
+with $\C(t_0)$ positive definite. We use $a$ for one lattice-time step and consider three distinct slices
+\[
+t_0<t<t+a.
+\]
+The ALPHA GEVP is
+\[
+\C(s)v_n(s,t_0)=\lambda_n(s,t_0)\C(t_0)v_n(s,t_0),
+\qquad s>t_0.
+\]
+The effective energy is the fixed-reference finite difference
+\begin{equation}
+\Ealp_n(t,t_0)=-\frac1a\log\frac{\lambda_n(t+a,t_0)}{\lambda_n(t,t_0)}.
+\label{eq:alpha}
+\end{equation}
+Thus the three matrices used are $\C(t_0),\C(t),\C(t+a)$. The two GEVPs in the ratio have the same metric matrix $\C(t_0)$.
+
+\subsection*{What the ALPHA theorem actually assumes}
+The 2019 talk describes the improved result using a ``single contaminating state'' simplification (talk slide 10). The ALPHA paper's theorem is more general: it splits the full spectral sum after the first $N$ states, with
+\[
+\C(s)=\C^{(0)}(s)+\C^{(1)}(s),\qquad
+\C^{(1)}(s)=\sum_{k>N}e^{-E_k s}\psi_k\psi_k^\dagger.
+\]
+The paper proves, under its positive-transfer/spectral assumptions, that at fixed $t_0$ the generic correction is initially controlled by the nearest-level gap,
+\[
+\epsilon_n(t,t_0)=O(e^{-\Delta E_n t}),\qquad
+\Delta E_n=\min_{m\ne n}|E_m-E_n|,
+\]
+whereas in the regime
+\begin{equation}
+ t_0\geq\frac t2
+ \label{eq:alphacond}
+\end{equation}
+one obtains to all perturbative orders
+\begin{equation}
+\boxed{\epsilon_n(t,t_0)=O\!\left(e^{-(E_{N+1}-E_n)t}\right).}
+\label{eq:alphagap}
+\end{equation}
+The full tail $k>N$ is present; a literal one-state tail is not required for this asymptotic theorem. A one-state truncation can still be a useful toy model for studying coefficients or inverse problems.
+
+\section{A three-slice positive defect for the actual ALPHA times}
+Set
+\[
+\tau=t-t_0>0,\qquad p=\frac{\tau+a}{\tau}=1+\frac a\tau,
+\]
+and whiten the two later correlators with the first:
+\begin{align}
+\A&=\C(t_0)^{-1/2}\C(t)\C(t_0)^{-1/2},\\
+\B&=\C(t_0)^{-1/2}\C(t+a)\C(t_0)^{-1/2}.
+\end{align}
+For distinct lattice slices, $\tau\geq a$, hence $1<p\leq2$.
+
+\subsection{The operator-Jensen argument}
+Let $F:\mathbb C^N\to\mathcal H$ map coefficient vectors to the corresponding interpolating states, so that
+\[
+\C(s)=F^\dagger e^{-Hs}F.
+\]
+Define
+\[
+Y=e^{-Ht_0/2}F\C(t_0)^{-1/2}.
+\]
+Then $Y^\dagger Y=I$, so $Y$ is an isometry. With $X=e^{-H\tau}$,
+\[
+\A=Y^\dagger X Y,\qquad
+\B=Y^\dagger X^pY.
+\]
+For $1\leq p\leq2$, the scalar function $f(x)=x^p$ is operator convex on $[0,\infty)$. The compression form of the operator Jensen inequality therefore gives
+\[
+(Y^\dagger X Y)^p\preceq Y^\dagger X^pY.
+\]
+Consequently,
+\begin{equation}
+\boxed{\D_p:=\B-\A^p\succeq0.}
+\label{eq:jensen}
+\end{equation}
+This is exact. It does not assume one contaminating state, small contamination, or a perturbative expansion. The assumptions are positivity of the transfer operator and positive definiteness of $\C(t_0)$. If the chosen operator subspace is invariant under $X$, then equality holds and $D_p=0$; thus $D_p$ is a Jensen-gap diagnostic for leakage out of that subspace.
+
+\subsection{Why this is relevant to the talk's error split}
+Diagonalize $\A=U\operatorname{diag}(\mu_1,\ldots,\mu_N)U^\dagger$, with $\mu_1\geq\cdots\geq\mu_N>0$, and write
+\[
+\widetilde D=U^\dagger\D_pU.
+\]
+Then
+\[
+U^\dagger\B U=\operatorname{diag}(\mu_1^p,\ldots,\mu_N^p)+\widetilde D,
+\qquad \widetilde D\succeq0.
+\]
+This gives a direct, nonperturbative analogue of the split in Hoying's slides 14--22:
+\begin{itemize}
+\item $\widetilde D_{nn}$ is the diagonal defect in the first GEVP basis;
+\item $\widetilde D_{mn}$ for $m\ne n$ is the off-diagonal defect that drives a change of eigenbasis.
+\end{itemize}
+Positivity immediately implies
+\begin{equation}
+\boxed{|\widetilde D_{mn}|^2\leq \widetilde D_{mm}\widetilde D_{nn}.}
+\label{eq:cs}
+\end{equation}
+So the mixing defect cannot be arbitrarily large compared with the diagonal defects of the two participating states.
+
+There is also an exact commutator identity:
+\begin{equation}
+[\A,\B]=[\A,\D_p],\qquad
+[\A,\B]_{mn}=(\mu_m-\mu_n)\widetilde D_{mn}
+\quad\text{in the $\A$-eigenbasis}.
+\label{eq:comm}
+\end{equation}
+Thus the commutator proposal on slide 20 is a direct measure of off-diagonal defect, after accounting for the level separation. A small commutator alone is not evidence of small mixing near a degeneracy because the factor $\mu_m-\mu_n$ is then small. Near-degenerate levels should be treated as a joint subspace.
+
+\subsection{A further exact inequality}
+Let $\mu_n$ be the ordered eigenvalues of $\A$ and $\beta_n$ those of $\B$, both in decreasing order. Since $\B\succeq\A^p$, Weyl monotonicity gives
+\[
+\beta_n\geq\mu_n^p.
+\]
+The ALPHA estimate is $\Ealp_n=-(1/a)\log(\beta_n/\mu_n)$. Hence
+\begin{equation}
+\boxed{
+\Ealp_n(t,t_0)\leq -\frac1\tau\log\mu_n.
+}
+\label{eq:chord}
+\end{equation}
+The right side is the generalized-eigenvalue decay rate over the earlier interval $[t_0,t]$. Equation~\eqref{eq:chord} is a matrix version of the fact that the later logarithmic slope of a positive Laplace transform is no larger than its earlier secant slope. It is a relation between two effective estimates, not by itself a bound on the true energy $E_n$.
+
+\section{Explicit comparison: ALPHA ratio versus a moving-reference GEVP}
+A natural alternative using the two later slices is
+\begin{equation}
+\C(t+a)w_n=\theta_n\C(t)w_n.
+\label{eq:moving}
+\end{equation}
+In the whitened coordinates above, its eigenvalues are
+\[
+\theta_n\in\spec(\A^{-1/2}\B\A^{-1/2}).
+\]
+Define
+\[
+\Emov_n(t,a)=-\frac1a\log\theta_n.
+\]
+
+\subsection{The moving-pair estimator is variational}
+Let $T_a=e^{-Ha}$. The generalized eigenvalues in~\eqref{eq:moving} are the Ritz eigenvalues of $T_a$ compressed to the subspace generated by the states $e^{-Ht/2}O_i^\dagger|0\rangle$. By the min--max principle, if the exact transfer eigenvalues are $x_n=e^{-E_na}$ in decreasing order, then
+\begin{equation}
+\theta_n\leq x_n=e^{-E_na},\qquad
+\boxed{E_n\leq\Emov_n(t,a)}
+\label{eq:ritz}
+\end{equation}
+for every resolved level $n=1,\ldots,N$. This is an exact upper bound on the energy, not merely an asymptotic statement. It requires the usual positive transfer operator and no finite-time wraparound contamination.
+
+\subsection{The leading omitted-state term is the same}
+Expand the moving-pair GEVP around the correlator truncated after the first $N$ states. With $u_n$ the dual vectors of the truncated problem and $c_{nnk}=|(u_n,\psi_k)|^2$, first-order generalized-eigenvalue perturbation theory gives
+\[
+\frac{\delta\theta_n}{e^{-E_na}}
+=-\sum_{k>N}c_{nnk}e^{-(E_k-E_n)t}\left(1-e^{-(E_k-E_n)a}\right)+O((\C^{(1)})^2).
+\]
+Consequently,
+\[
+\Emov_n=E_n+\frac1a\sum_{k>N}c_{nnk}e^{-(E_k-E_n)t}\left(1-e^{-(E_k-E_n)a}\right)+O((\C^{(1)})^2).
+\]
+This is the same leading first-order energy correction as in the ALPHA formula (their Eq. (3.16)). Thus the moving-pair method does not improve the generic first-order exponential bias; its extra advantage is the exact Ritz upper-bound property. The difference between the two estimators lives in their higher-order behavior and in their numerical/statistical conditioning.
+
+\subsection{Exact comparison for the ground state}
+Write $r_n=\beta_n/\mu_n$, so that $\Ealp_n=-(1/a)\log r_n$. The largest moving-pair eigenvalue is
+\[
+\theta_1=\max_{x\ne0}\frac{x^\dagger Bx}{x^\dagger\A x}.
+\]
+Choose a unit eigenvector $u_1$ of $B$ for $\beta_1$. Since $u_1^\dagger\A u_1\leq\mu_1$,
+\[
+\theta_1\geq\frac{u_1^\dagger Bu_1}{u_1^\dagger\A u_1}
+\geq\frac{\beta_1}{\mu_1}=r_1.
+\]
+Combining with~\eqref{eq:ritz},
+\begin{equation}
+\boxed{E_1\leq\Emov_1\leq\Ealp_1.}
+\label{eq:groundorder}
+\end{equation}
+Thus, for the ground state, the moving-pair Ritz estimate is a tighter (lower) variational upper bound than the ALPHA ratio estimate. This is a precise comparison, valid for arbitrary distinct $t_0<t<t+a$.
+
+For the lowest ordered transfer eigenvalue one obtains the reverse comparison $\theta_N\leq r_N$, hence $\Emov_N\geq\Ealp_N$. For interior levels there is no universal componentwise ordering between $\theta_n$ and $r_n$. In particular, it is not correct to claim that the moving-pair estimate is uniformly better for every excited state. Nor does the ALPHA ratio have a general all-orders variational upper-bound theorem for every excited level: the paper's higher-order corrections can have either sign, even though the leading first-order term is positive.
+
+\subsection{A synthetic counterexample for interior levels}
+The absence of a universal interior ordering is not just a technical possibility. Consider positive finite spectral models with $N=3$ interpolators, eight physical states, and $\tau=3a$, so $p=4/3$. Form $C(t_0),C(t),C(t+a)$ from positive overlaps and transfer factors $x_k=e^{-E_k\tau}$. The table gives the eigenvalues $\mu$ of $A$, $\beta$ of $B$, the ALPHA ratios $r_n=\beta_n/\mu_n$, and the moving-pair eigenvalues $\theta_n$ (rounded):
+\begin{center}
+\small
+\begin{tabular}{c|c|c|c|c}
+\toprule
+model & $\mu$ & $\beta$ & $r=\beta/\mu$ & $\theta$\\
+\midrule
+I & $(.57749,.46167,.27818)$ & $(.50556,.38293,.18723)$ & $(.87544,.82944,.67305)$ & $(.88574,.82076,.67226)$\\
+II & $(.77948,.53236,.32743)$ & $(.72469,.44835,.24258)$ & $(.92972,.84221,.74084)$ & $(.93100,.84536,.73706)$\\
+\bottomrule
+\end{tabular}
+\end{center}
+In model I, $\theta_2<r_2$; in model II, $\theta_2>r_2$. In both examples the exact endpoint inequalities hold: $\theta_1\geq r_1$ and $\theta_N\leq r_N$. The examples use only positive spectral weights, so the failure of an interior ordering is intrinsic, not caused by non-positive data.
+
+\section{What the ALPHA asymptotics say about time optimization}
+\subsection{The late-time step $a$}
+The leading first-order contribution of omitted states to the ALPHA energy has the form (restoring the factor $1/a$ when energies are expressed in physical units)
+\begin{equation}
+\epsilon_n^{(1)}(t,t_0)
+=\frac1a\sum_{k>N}c_{nnk}\,e^{-(E_k-E_n)t}
+\left(1-e^{-(E_k-E_n)a}\right)+\cdots,
+\label{eq:firstorder}
+\end{equation}
+where $c_{nnk}=|(u_n,\psi_k)|^2\geq0$ in the notation of the ALPHA paper. The leading term is independent of $t_0$ and is generically dominated by $k=N+1$.
+
+There is a clean optimization statement if the latest available time $T=t+a$ is fixed. For one gap $\Delta>0$, the leading bias factor is
+\[
+\frac{e^{-\Delta t}(1-e^{-\Delta a})}{a}
+=e^{-\Delta T}\frac{e^{\Delta a}-1}{a}.
+\]
+The function $(e^{\Delta a}-1)/a$ is strictly increasing for $a>0$, since
+\[
+\frac{\dd}{\dd a}\frac{e^{\Delta a}-1}{a}
+=\frac{(\Delta a-1)e^{\Delta a}+1}{a^2}>0.
+\]
+Therefore, at fixed latest time, the smallest possible finite-difference step minimizes the leading deterministic excited-state bias. On a lattice this is one time step. \textbf{ALPHA already uses the optimal adjacent pair $t,t+a$ in this narrow first-order, fixed-endpoint sense.} This says nothing about statistical variance: a shorter finite difference can be noisier or more correlated, and the covariance matrix of the data must be included in a practical optimization.
+
+\subsection{The reference time $t_0$}
+Equation~\eqref{eq:firstorder} contains no $t_0$ in its leading coefficient. Thus the first-order asymptotic bias gives no preference among reference times. The reason for the ALPHA condition $t_0\geq t/2$ appears at second and higher orders, where mixing among retained states contributes terms with exponentials of the schematic forms
+\[
+ e^{-(2E_{N+1}-E_n-E_m)t_0}\,e^{-(E_m-E_n)(t-t_0)}
+ \quad(m>n),
+\]
+and
+\[
+ e^{-(2E_{N+1}-E_n-E_m)t_0}\,e^{-(E_n-E_m)(t-t_0)}
+ \quad(m<n).
+\]
+For $m>n$, the exponent in the first expression exceeds the leading exponent $(E_{N+1}-E_n)t$ by
+\[
+(E_{N+1}-E_m)(2t_0-t).
+\]
+For $m<n$, the excess is also nonnegative when $t_0\geq t/2$. This explains why $t_0=t/2$ is the threshold at which the higher-order mixing terms cease to decay more slowly than the desired large-gap first-order term. Blossier et al. establish the favorable behavior to all orders.
+
+This is an asymptotic threshold, not a unique optimum. Increasing $t_0$ beyond $t/2$ generally suppresses mixing further at the level of these exponents, but it also changes the GEVP conditioning. If $t-t_0$ is made too small, the unperturbed generalized eigenvalues $e^{-E_n(t-t_0)}$ become close together, making eigenvectors more sensitive to noise and numerical errors. The statistical covariance and condition number are not determined by the spectral theorem. A sensible rule is therefore: satisfy $t_0\geq t/2$, then choose $t_0$ as late as the data quality and GEVP conditioning permit.
+
+\subsection{Is the ALPHA exponent itself optimal?}
+For a generic nonzero overlap with the first omitted state, the first-order term in~\eqref{eq:firstorder} really is proportional to $e^{-(E_{N+1}-E_n)t}$. Thus this is a sharp generic exponent for the ALPHA estimator: one cannot expect a universally faster decay without additional structure (for example, a vanishing overlap, a larger variational basis, or a model-based cancellation of the leading tail). The condition $t_0\geq t/2$ prevents higher-order mixing from spoiling that exponent.
+
+So the accurate verdict is:
+\begin{itemize}
+\item \textbf{Yes, asymptotically optimal in exponent} for generic omitted-state contamination of this fixed-reference effective-energy construction, once $t_0\geq t/2$.
+\item \textbf{Yes, first-order bias-optimal in the late-time spacing} at fixed latest time, because $t,t+a$ are adjacent lattice slices.
+\item \textbf{No, not proven globally optimal} among all estimators or all time placements; in particular, it does not uniquely optimize $t_0$, and it does not include statistical noise in its theorem.
+\end{itemize}
+
+\section{How to get more from the same three slices}
+The Jensen defect and the moving-pair GEVP suggest a practical three-slice analysis that preserves the ALPHA estimator while adding independent diagnostics.
+
+\subsection{1. Compute the ALPHA estimator}
+Solve the two GEVPs with the common metric $C(t_0)$ and form~\eqref{eq:alpha}. Match levels between the two GEVPs using eigenvector overlaps, not eigenvalue ordering alone, when there are near-degeneracies or possible crossings.
+
+\subsection{2. Compute the matrix defect}
+Whiten $C(t)$ and $C(t+a)$ with $C(t_0)$ and form
+\[
+D_p=B-A^p,\qquad p=1+\frac{a}{t-t_0}.
+\]
+Check its eigenvalues. In exact positive-transfer data they are nonnegative. In Monte Carlo data small negative eigenvalues can arise from statistical fluctuations and should be assessed with a correlated jackknife/bootstrap rather than clipped without analysis. Rotate $D_p$ to the eigenbasis of $A$ and report its diagonal and off-diagonal components, together with $\|[A,B]\|$.
+
+\subsection{3. Compute the moving-pair GEVP}
+Solve $C(t+a)w_n=\theta_n C(t)w_n$. Use $-a^{-1}\log\theta_n$ as a variational upper bound on each resolved energy. For the ground state this bound is no worse than the ALPHA ratio bound by~\eqref{eq:groundorder}. For interior excited states, compare numerically rather than assuming one estimator dominates.
+
+\subsection{4. Compare the two eigenbases}
+Let $V$ be the eigenvector matrix of $C(t)v=C(t_0)v\Lambda$, normalized by $V^\dagger C(t_0)V=I$. Then $\widehat V=V\Lambda^{-1/2}$ is orthonormal in the $C(t)$ metric. Let $W$ be the moving-pair eigenvector matrix normalized by $W^\dagger C(t)W=I$. The cross-overlap
+\[
+R=\widehat V^\dagger C(t)W
+\]
+is unitary. In an exact $N$-state model the two GEVPs share the same physical eigenbasis, so $R$ is diagonal up to phases and permutations. Off-diagonal entries of $R$ diagnose basis rotation, in close analogy with the generalized-orthogonality constructions in slides 15--20. Near-degenerate subspaces should be compared by their projectors or principal angles, not by individual columns.
+
+\section{A special case: three consecutive slices}
+If $t_0=t-a$, then $\tau=a$ and $p=2$. The defect is
+\[
+D_2=B-A^2\succeq0.
+\]
+Equivalently, before whitening, it is the Schur complement
+\[
+C(t+a)-C(t)C(t-a)^{-1}C(t)\succeq0,
+\]
+which follows from positivity of the block Hankel matrix
+\[
+\begin{pmatrix}
+C(t-a)&C(t)\\ C(t)&C(t+a)
+\end{pmatrix}\succeq0.
+\]
+This is the simplest realization of the defect, and it aligns with the ALPHA theorem whenever $t-a\geq t/2$, i.e. $t\geq2a$. However, it makes the first GEVP use only a one-step separation; the eigenvalues $e^{-E_n a}$ can be close together. A larger reference gap $t-t_0$ may improve level resolution and conditioning. The generalized-power defect $D_p$ is therefore useful: it retains positivity for the actual non-equal ALPHA spacing whenever $t-t_0\geq a$.
+
+\subsection*{One-extra-state completion: strict hypothesis}
+For the special equally spaced case, if exactly $N+1$ physical states contribute and the retained $N$ overlap vectors are independent, then $D_2$ has rank at most one. Write $D_2=qq^\dagger$. The transfer matrix in the $N$-dimensional operator subspace plus its one-dimensional orthogonal complement has the completion
+\[
+M(c)=\begin{pmatrix}A&q\\q^\dagger&c\end{pmatrix},
+\]
+where $c$ is the one missing scalar matrix element. Assume $0\prec A\prec I$ (the usual positive-energy channel; if an exact unit eigenvalue is present, restrict to its complement or take a limiting formulation). If the transfer spectrum lies in $(0,1]$, the constraints $0\preceq M(c)\preceq I$ give
+\[
+\boxed{\Tr(A^{-1}D_2)\leq c\leq
+1-\Tr((I-A)^{-1}D_2).}
+\]
+Let $x_n(c)$ be its ordered eigenvalues. They are monotone in $c$, so for the true $c\in[c_-,c_+]$ one has $x_n(c_-)\leq x_n(c)\leq x_n(c_+)$. Since $x_n=e^{-E_na}$, this gives the explicit intervals
+\[
+-\frac1a\log x_n(c_+)\leq E_n\leq-\frac1a\log x_n(c_-),\qquad n=1,\ldots,N+1.
+\]
+Endpoint singularities can make an endpoint of an interval trivial (zero or infinite); the interior-level bounds are often the most useful. This is a cleaner version of the one-variable underdetermination discussed on slides 21--22. Important caveat: observing that $D_2$ is approximately rank one in real data does \emph{not} prove that precisely one physical state lies above the variational basis. With an infinite spectral tail, a one-step leakage direction can evolve into further directions at later times. The completion bounds require finite-state closure, not merely a numerical rank-one appearance.
+
+\section{A proposed answer to the optimization question}
+For an actual lattice analysis, I would use the following hierarchy.
+\begin{enumerate}
+\item Keep the ALPHA estimator as the central asymptotic estimator. Use adjacent late-time slices $t,t+a$; this is first-order bias-optimal at fixed latest time.
+\item Enforce $t_0\geq t/2$. Within that region, choose $t_0$ by a measured tradeoff among statistical error, systematic drift, and the condition number of $C(t_0)$ / the GEVP. The theorem alone cannot select the winner.
+\item Use all three slices to compute $D_p=B-A^p$ and the cross-basis matrix $R$. This is the most direct way I see to operationalize the talk's diagonal/off-diagonal split without reconstructing the full perturbation series.
+\item Compute the moving-pair Ritz estimator as an independent, rigorous upper-bound diagnostic. It gives a particularly useful check on the ground state; do not assume it dominates the ALPHA estimate for every excited state.
+\item Vary $N$ as well as the times. The ALPHA paper's central practical message is that increasing the variational basis can enlarge $E_{N+1}-E_n$ substantially, often buying more than simply pushing $t$ later. In its numerical demonstration, the collaboration projected an $8\times8$ matrix onto smaller bases to control numerical instability, varied $N=3,4,5$ and $t_0/a=3,\ldots,6$, and selected plateaux by minimizing $\sigma_{\rm tot}=\sigma_{\rm stat}+\sigma_{\rm sys}$ subject to $\sigma_{\rm sys}<\sigma_{\rm stat}$ (Sec. 4, pp. 12--14). This is a practical statistical/systematic optimization, not a theorem selecting one universal $t_0$.
+\end{enumerate}
+
+\textbf{Bottom line:} ALPHA is very well optimized for its stated asymptotic purpose, but not universally optimal as a three-slice data analysis. The new positive defect $D_p$ appears to be the most promising way to extract additional information from exactly the same three correlator matrices.
+
+\section*{Assumptions and limitations}
+The matrix inequalities above rely on a positive transfer operator (or a regime where the spectral representation with real positive weights is valid), a sufficiently large temporal extent to neglect wraparound terms, and positive-definite $C(t_0)$. The variational and operator-Jensen statements are exact under these assumptions. The ALPHA exponential remainder estimates are asymptotic statements from perturbation theory with their stated time restrictions. Statistical efficiency, covariance between slices, eigenvector matching in near-degenerate regions, and finite-precision conditioning require numerical study.
+
+\begin{thebibliography}{9}
+\bibitem{Blossier2009}
+B. Blossier, M. Della Morte, G. von Hippel, T. Mendes and R. Sommer (ALPHA Collaboration),
+\emph{On the generalized eigenvalue method for energies and matrix elements in lattice field theory},
+JHEP 04 (2009) 094, arXiv:0902.1265v2 [hep-lat].
+Relevant equations: (2.2), (2.4), (2.20)--(2.25), (3.16)--(3.19); discussion in Sec. 5.
+
+\bibitem{Hoying2019}
+D. Hoying, \emph{Three t GEVP}, talk slides, 24 September 2019.
+Especially slides 10--22 (three-time error analysis, diagonal/off-diagonal split and commutator), 24--27 (toy-model optimization), and 29--30 (conclusions and open questions).
+\end{thebibliography}
+
+\end{document}
